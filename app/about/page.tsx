@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
+import { getSafeTeam, getSafeLocations } from '@/lib/safe-data';
 import Link from 'next/link';
 import { ArrowRight, Shield, Cpu, Code2, Users, CheckCircle2 } from 'lucide-react';
 import JsonLd from '@/components/seo/JsonLd';
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   const [teamMembers, locations] = await Promise.all([
-    prisma.teamMember.findMany({ orderBy: { order: 'asc' } }),
-    prisma.location.findMany({ orderBy: { isHeadquarter: 'desc' } }),
+    getSafeTeam(),
+    getSafeLocations(),
   ]);
 
   return (

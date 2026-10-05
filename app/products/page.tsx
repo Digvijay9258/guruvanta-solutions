@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
+import { getSafeProducts } from '@/lib/safe-data';
 import Link from 'next/link';
 import { ArrowRight, Check, ShieldCheck, Layers, Cpu } from 'lucide-react';
 import JsonLd from '@/components/seo/JsonLd';
@@ -12,10 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProductsPage() {
-  const products = await prisma.product.findMany({
-    where: { published: true },
-    orderBy: { order: 'asc' },
-  });
+  const products = await getSafeProducts();
 
   return (
     <div className="w-full bg-black text-white pt-32 pb-24 px-6">

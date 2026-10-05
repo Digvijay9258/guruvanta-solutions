@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { getSafeServices, getSafeProducts, getSafeIndustries, getSafePortfolio } from '@/lib/safe-data';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://guruvanta.com';
 
   const [services, products, industries, portfolio] = await Promise.all([
-    prisma.service.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } }),
-    prisma.product.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } }),
-    prisma.industry.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } }),
-    prisma.portfolioProject.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } }),
+    getSafeServices(),
+    getSafeProducts(),
+    getSafeIndustries(),
+    getSafePortfolio(),
   ]);
 
   const staticRoutes = [

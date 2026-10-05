@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
+import { getSafeIndustries } from '@/lib/safe-data';
 import Link from 'next/link';
 import { ArrowRight, Layers, Sparkles, Shield, Cpu } from 'lucide-react';
 import JsonLd from '@/components/seo/JsonLd';
@@ -12,10 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SolutionsPage() {
-  const industries = await prisma.industry.findMany({
-    where: { published: true },
-    orderBy: { order: 'asc' },
-  });
+  const industries = await getSafeIndustries();
 
   return (
     <div className="w-full bg-black text-white pt-32 pb-24 px-6">

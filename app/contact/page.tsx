@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
+import { getSafeLocations } from '@/lib/safe-data';
 import ContactForm from '@/components/forms/ContactForm';
 import { Mail, Phone, MapPin, Globe, Linkedin, Twitter, Github } from 'lucide-react';
 import JsonLd from '@/components/seo/JsonLd';
@@ -12,9 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const locations = await prisma.location.findMany({
-    orderBy: { isHeadquarter: 'desc' },
-  });
+  const locations = await getSafeLocations();
 
   return (
     <div className="w-full bg-black text-white pt-32 pb-24 px-6">

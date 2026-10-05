@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
+import { getSafeFAQs } from '@/lib/safe-data';
 import FAQAccordion from './FAQAccordion';
 import JsonLd from '@/components/seo/JsonLd';
 
@@ -11,10 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function FAQPage() {
-  const faqs = await prisma.fAQ.findMany({
-    where: { published: true },
-    orderBy: { order: 'asc' },
-  });
+  const faqs = await getSafeFAQs();
 
   const faqSchema = {
     '@type': 'FAQPage',

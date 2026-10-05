@@ -1,5 +1,5 @@
 import React from 'react';
-import prisma from '@/lib/prisma';
+import { getSafeServices, getSafeProducts, getSafeIndustries, getSafePortfolio, getSafeTestimonials } from '@/lib/safe-data';
 import CinematicHero from '@/components/cinematic/CinematicHero';
 import WhatWeBuildSection from '@/components/sections/WhatWeBuildSection';
 import SystemCoreGraph from '@/components/cinematic/SystemCoreGraph';
@@ -13,29 +13,13 @@ import { ArrowRight, Star, Building2, Stethoscope, UtensilsCrossed, Gem, Store, 
 export const revalidate = 60; // ISR cache revalidation every minute
 
 export default async function HomePage() {
-  // Fetch dynamic content from Prisma
+  // Fetch dynamic content safely with fallback
   const [services, products, industries, portfolio, testimonials] = await Promise.all([
-    prisma.service.findMany({
-      where: { published: true },
-      orderBy: { order: 'asc' },
-    }),
-    prisma.product.findMany({
-      where: { published: true },
-      orderBy: { order: 'asc' },
-    }),
-    prisma.industry.findMany({
-      where: { published: true },
-      orderBy: { order: 'asc' },
-    }),
-    prisma.portfolioProject.findMany({
-      where: { published: true },
-      take: 4,
-      orderBy: { order: 'asc' },
-    }),
-    prisma.testimonial.findMany({
-      where: { published: true },
-      orderBy: { order: 'asc' },
-    }),
+    getSafeServices(),
+    getSafeProducts(),
+    getSafeIndustries(),
+    getSafePortfolio(4),
+    getSafeTestimonials(),
   ]);
 
   const industryIcons: Record<string, React.ReactNode> = {

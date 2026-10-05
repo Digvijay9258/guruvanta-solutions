@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
+import { getSafeServices } from '@/lib/safe-data';
 import Link from 'next/link';
 import { ArrowRight, Code2, Database, Factory, Sparkles, CheckCircle2 } from 'lucide-react';
 import JsonLd from '@/components/seo/JsonLd';
@@ -12,10 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ServicesPage() {
-  const services = await prisma.service.findMany({
-    where: { published: true },
-    orderBy: { order: 'asc' },
-  });
+  const services = await getSafeServices();
 
   const categories = [
     'Software Development',
