@@ -1,0 +1,235 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String
+  passwordHash String
+  role         String         @default("ADMIN") // SUPER_ADMIN, ADMIN, EDITOR, SALES, SUPPORT
+  avatar       String?
+  leads        Lead[]         @relation("AssignedLeads")
+  activities   LeadActivity[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Lead {
+  id                 String         @id @default(cuid())
+  name               String
+  company            String
+  email              String
+  phone              String
+  businessType       String?
+  city               String?
+  interestedSolution String?
+  numberOfUsers      String?
+  currentSoftware    String?
+  requirement        String?
+  preferredContact   String?        @default("EMAIL") // EMAIL, PHONE, WHATSAPP
+  status             String         @default("NEW") // NEW, CONTACTED, QUALIFIED, DEMO_SCHEDULED, PROPOSAL, NEGOTIATION, WON, LOST
+  assignedToId       String?
+  assignedTo         User?          @relation("AssignedLeads", fields: [assignedToId], references: [id])
+  followUpDate       DateTime?
+  notes              String?
+  activities         LeadActivity[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+model LeadActivity {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type        String   // CREATED, STATUS_CHANGE, ASSIGNED, NOTE_ADDED, FOLLOW_UP_CHANGED
+  title       String
+  description String?
+  createdById String?
+  createdBy   User?    @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model DemoRequest {
+  id            String   @id @default(cuid())
+  name          String
+  company       String
+  email         String
+  phone         String
+  solution      String
+  numberOfUsers String?
+  preferredDate String?
+  timeSlot      String?
+  status        String   @default("PENDING") // PENDING, CONFIRMED, COMPLETED, CANCELLED
+  notes         String?
+  createdAt     DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  status    String   @default("UNREAD") // UNREAD, READ, RESPONDED, ARCHIVED
+  createdAt DateTime @default(now())
+}
+
+model Service {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  category       String   // Software Development, ERP & Business Systems, Industry Solutions, Automation & AI
+  shortDesc      String
+  description    String
+  features       String   // JSON string of features list
+  technologies   String?  // JSON string
+  icon           String?
+  featuredImage  String?
+  published      Boolean  @default(true)
+  order          Int      @default(0)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Product {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  tag            String?  // Enterprise ERP, Cloud Billing, etc.
+  headline       String
+  description    String
+  features       String   // JSON string
+  modules        String   // JSON string
+  architecture   String?
+  pricingTier    String?
+  featuredImage  String?
+  published      Boolean  @default(true)
+  order          Int      @default(0)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Industry {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  headline       String
+  description    String
+  painPoints     String   // JSON string
+  keyModules     String   // JSON string
+  workflow       String?  // Text description or JSON of operational flow
+  icon           String?
+  featuredImage  String?
+  published      Boolean  @default(true)
+  order          Int      @default(0)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model PortfolioProject {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  industry       String
+  clientType     String
+  summary        String
+  problem        String
+  solution       String
+  modules        String   // JSON string
+  technology     String   // JSON string
+  results        String   // JSON string of metrics & impacts
+  featuredImage  String?
+  gallery        String?  // JSON string
+  published      Boolean  @default(true)
+  order          Int      @default(0)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String   // ERP, Billing, Custom Software, Mobile Apps, AI, WhatsApp Automation, Security, Support
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  authorName String
+  authorRole String
+  company    String
+  quote      String
+  rating     Int      @default(5)
+  logo       String?
+  avatar     String?
+  published  Boolean  @default(true)
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  bio       String
+  avatar    String?
+  linkedin  String?
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Location {
+  id            String   @id @default(cuid())
+  city          String
+  country       String
+  address       String
+  phone         String?
+  email         String?
+  isHeadquarter Boolean  @default(false)
+  mapUrl        String?
+  createdAt     DateTime @default(now())
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  filename  String
+  url       String
+  mimeType  String
+  size      Int
+  width     Int?
+  height    Int?
+  altText   String?
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, ALERT
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+}
